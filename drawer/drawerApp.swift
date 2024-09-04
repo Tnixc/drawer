@@ -11,10 +11,18 @@ class CustomPanel: NSPanel {
         self.isOpaque = false
         self.backgroundColor = .clear
         self.hasShadow = true
+        self.level = .floating
+        self.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        self.isMovable = false
+        self.hidesOnDeactivate = false
+        self.ignoresMouseEvents = true
     }
+    
+    override func makeKey() {}
+    override func makeKeyAndOrderFront(_ sender: Any?) {}
+    override func becomeKey() {}
+    override func becomeMain() {}
 }
-import SwiftUI
-import AppKit
 
 @main
 struct drawerApp: App {
@@ -26,7 +34,7 @@ struct drawerApp: App {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var panel: NSPanel?
+    var panel: CustomPanel?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupPanel()
@@ -34,14 +42,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func setupPanel() {
         let cornerRadius: CGFloat = 16
-        let xOffset: CGFloat = 20
-        let yOffset: CGFloat = 20
+        let xOffset: CGFloat = 10
+        let yOffset: CGFloat = 10
         
         // Create a temporary off-screen view to measure content size
         let measureView = NSHostingView(rootView: ContentView(onClose: closePanel))
         measureView.frame.size = CGSize(width: 9999, height: 9999)
-        
-        // Force layout to get accurate size
         measureView.layout()
         let contentSize = measureView.fittingSize
         
@@ -61,41 +67,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         contentView.layer?.masksToBounds = true
         
         panel.contentView = contentView
-        panel.isFloatingPanel = true
-        panel.level = .floating
-        panel.collectionBehavior = [.canJoinAllSpaces, .stationary]
-        panel.isMovable = false
-        panel.hidesOnDeactivate = false
-        panel.alphaValue = 0 // Start with zero opacity
         
         // Position the panel
         if let screen = NSScreen.main {
             let screenFrame = screen.visibleFrame
-            panel.setFrameOrigin(NSPoint(
+            let finalOrigin = NSPoint(
                 x: screenFrame.maxX - contentSize.width - xOffset,
                 y: screenFrame.maxY - contentSize.height - yOffset
-            ))
+            )
+            panel.setFrameOrigin(finalOrigin)
         }
         
-        panel.makeKeyAndOrderFront(nil)
+        panel.orderFrontRegardless()
         self.panel = panel
-        
-        // Animate the panel appearance
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.3
-            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
-            panel.animator().alphaValue = 1
-        }
     }
     
     func closePanel() {
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.3
-            context.timingFunction = CAMediaTimingFunction(name: .easeIn)
-            panel?.animator().alphaValue = 0
-        } completionHandler: {
-            self.panel?.close()
-            self.panel = nil
-        }
+        self.panel?.close()
+        self.panel = nil
     }
 }

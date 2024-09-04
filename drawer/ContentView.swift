@@ -22,8 +22,6 @@ struct ContentView: View {
                                 .foregroundColor(.primary)
                                 .lineLimit(nil)
                                 .fixedSize(horizontal: false, vertical: true)
-                                .opacity(isVisible ? 1 : 0)
-                                .animation(.easeIn(duration: 0.5).delay(0.3), value: isVisible)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
