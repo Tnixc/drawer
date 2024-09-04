@@ -6,11 +6,36 @@ struct ContentView: View {
             VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
                 .ignoresSafeArea()
             
-            VStack {
-                Text("Hello, world!")
-                    .foregroundColor(.primary)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "triangle.inset.filled")
+                            .font(.system(size: 24))
+                            .foregroundColor(.primary)
+                        
+                        Text(wrappedText)
+                            .foregroundColor(.primary)
+                            .lineLimit(nil)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
         }
+    }
+    
+    var wrappedText: String {
+        let originalText = "hisome llonger textlonger textlonger tetextlonger textlonger tetextlonger textlonger tetextlonger textlonger tetextlonger textlonger tetextlonger textlonger tetextlonger textlonger textlonger textlonger textonger text"
+        return originalText.split(whereSeparator: { $0.isWhitespace })
+            .reduce(into: "") { result, word in
+                if (result.components(separatedBy: .newlines).last ?? "").count + word.count > 60 {
+                    result += "\n\(word) "
+                } else {
+                    result += "\(word) "
+                }
+            }
+            .trimmingCharacters(in: .whitespaces)
     }
 }
 
@@ -27,8 +52,4 @@ struct VisualEffectView: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
-}
-
-#Preview {
-    ContentView()
 }
