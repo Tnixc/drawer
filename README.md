@@ -32,8 +32,19 @@ drawer --message "Your message here" [options]
 - `--icon-color`: The color of the icon in hex format (default: "#5DA5FF")
 - `--fg-color`: The color of the text in hex format (default: "#BCCAFD")
 - `--bg-color`: The background color in hex format (default: "#24273C")
+- `--pos "position"`: Set the position of the notification (default: "bottom-left")
 
-### Example
+#### Positions
+
+Available positions for the `--pos` option:
+- "top-left"
+- "top-center"
+- "top-right"
+- "bottom-left"
+- "bottom-center"
+- "bottom-right"
+
+### Examples
 
 ```
 drawer --message "Hello, World\!" --icon "snowflake" --duration 3 --icon-color "#6188AC" --fg-color "#FFFFFF" --bg-color "#000000"`

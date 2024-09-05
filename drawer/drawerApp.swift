@@ -46,6 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         var iconColor = Color(hex: "#5DA5FF") // Default icon color
         var fgColor = Color(hex: "#BCCAFD") // Default foreground color
         var bgColor = Color(hex: "#24273C") // Default background color
+        var position = "bottom-left" // Default position
 
         // Parse arguments
         for i in 1..<arguments.count {
@@ -61,13 +62,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 fgColor = Color(hex: arguments[i + 1])
             } else if arguments[i] == "--bg-color" && i + 1 < arguments.count {
                 bgColor = Color(hex: arguments[i + 1])
+            } else if arguments[i] == "--pos" && i + 1 < arguments.count {
+                position = arguments[i + 1].lowercased()
             }
         }
 
-        setupPanel(message: message, icon: icon, duration: duration, iconColor: iconColor, fgColor: fgColor, bgColor: bgColor)
+        setupPanel(message: message, icon: icon, duration: duration, iconColor: iconColor, fgColor: fgColor, bgColor: bgColor, position: position)
     }
     
-    func setupPanel(message: String, icon: String, duration: Double = 2.0, iconColor: Color = Color(hex: "#5DA5FF"), fgColor: Color = Color(hex: "#BCCAFD"), bgColor: Color = Color(hex: "#24273C")) {
+    func setupPanel(message: String, icon: String, duration: Double = 2.0, iconColor: Color = Color(hex: "#5DA5FF"), fgColor: Color = Color(hex: "#BCCAFD"), bgColor: Color = Color(hex: "#24273C"), position: String = "top-right") {
         let cornerRadius: CGFloat = 16
         let xOffset: CGFloat = 15
         let yOffset: CGFloat = 15
@@ -91,17 +94,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Position the panel
         if let screen = NSScreen.main {
             let screenFrame = screen.visibleFrame
-            let finalOrigin = NSPoint(
-                x: screenFrame.maxX - contentView.frame.width - xOffset,
-                y: screenFrame.maxY - contentView.frame.height - yOffset
-            )
+            var finalOrigin: NSPoint
+            
+            switch position {
+            case "top-left":
+                finalOrigin = NSPoint(x: screenFrame.minX + xOffset, y: screenFrame.maxY - contentView.frame.height - yOffset)
+            case "top-center":
+                finalOrigin = NSPoint(x: screenFrame.midX - contentView.frame.width / 2, y: screenFrame.maxY - contentView.frame.height - yOffset)
+            case "top-right":
+                finalOrigin = NSPoint(x: screenFrame.maxX - contentView.frame.width - xOffset, y: screenFrame.maxY - contentView.frame.height - yOffset)
+            case "bottom-left":
+                finalOrigin = NSPoint(x: screenFrame.minX + xOffset, y: screenFrame.minY + yOffset)
+            case "bottom-center":
+                finalOrigin = NSPoint(x: screenFrame.midX - contentView.frame.width / 2, y: screenFrame.minY + yOffset)
+            case "bottom-right":
+                finalOrigin = NSPoint(x: screenFrame.maxX - contentView.frame.width - xOffset, y: screenFrame.minY + yOffset)
+            default:
+                // Default to top-right if an invalid position is provided
+                finalOrigin = NSPoint(x: screenFrame.maxX - contentView.frame.width - xOffset, y: screenFrame.maxY - contentView.frame.height - yOffset)
+            }
+            
             panel.setFrameOrigin(finalOrigin)
         }
         
         panel.orderFrontRegardless()
         self.panel = panel
         
-        // Set up a timer to close the panel after 2 seconds
+        // Set up a timer to close the panel after the specified duration
         timer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { [weak self] _ in
             self?.closePanel()
         }
