@@ -14,6 +14,7 @@ Drawer is a lightweight, customizable notification system for macOS. It displays
 
 <img width="400" alt="Screenshot 2024-09-04 at 22 04 44" src="https://github.com/user-attachments/assets/4ff3feaf-7f8e-458f-b300-8e313b2e2d80">
 <img width="400" alt="Screenshot 2024-09-04 at 22 05 29" src="https://github.com/user-attachments/assets/876eaaf4-8334-4df6-a956-2bf659b42f6f">
+<img width="411" alt="image" src="https://github.com/user-attachments/assets/191d7b8e-6697-436b-b0f6-df402f9bbe3c">
 
 ## Usage
 
