@@ -1,55 +1,28 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isHovering = false
-    @State private var isVisible = false
+    let message: String
+    let icon: String
     var onClose: () -> Void
     
     var body: some View {
         ZStack {
-            VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
+            Color(hex: "#24273C")
                 .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "snowflake")
-                                .font(.system(size: 24))
-                                .foregroundColor(.blue)
-                            
-                            Text(wrappedText)
-                                .foregroundColor(.primary)
-                                .lineLimit(nil)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: icon)
+                        .font(.system(size: 24))
+                        .foregroundColor(Color(hex: "#5DA5FF"))
+                    
+                    Text(message)
+                        .foregroundColor(Color(hex: "#BCCAFD"))
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
-        }
-        .onHover { hovering in
-            isHovering = hovering
-        }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isVisible = true
-            }
-        }
-    }
-    
-    var wrappedText: String {
-        let originalText = "nix-rebuild switch done"
-        return originalText.split(whereSeparator: { $0.isWhitespace })
-            .reduce(into: "") { result, word in
-                if (result.components(separatedBy: .newlines).last ?? "").count + word.count > 60 {
-                    result += "\n\(word) "
-                } else {
-                    result += "\(word) "
-                }
-            }
-            .trimmingCharacters(in: .whitespaces)
+        .frame(width: 350) // Fixed height for consistency
     }
 }
 struct VisualEffectView: NSViewRepresentable {
@@ -65,4 +38,32 @@ struct VisualEffectView: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
+}
+
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue:  Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
 }

@@ -35,28 +35,35 @@ struct drawerApp: App {
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var panel: CustomPanel?
+    var timer: Timer?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupPanel()
+        let arguments = CommandLine.arguments
+        var message = "No message provided"
+        var icon = "slash.circle.fill" // Default icon
+
+        // Parse arguments
+        for i in 1..<arguments.count {
+            if arguments[i] == "--message" && i + 1 < arguments.count {
+                message = arguments[i + 1]
+            } else if arguments[i] == "--icon" && i + 1 < arguments.count {
+                icon = arguments[i + 1]
+            }
+        }
+
+        setupPanel(with: message, icon: icon)
     }
     
-    func setupPanel() {
+    func setupPanel(with message: String, icon: String) {
         let cornerRadius: CGFloat = 16
-        let xOffset: CGFloat = 10
-        let yOffset: CGFloat = 10
+        let xOffset: CGFloat = 15
+        let yOffset: CGFloat = 15
         
-        // Create a temporary off-screen view to measure content size
-        let measureView = NSHostingView(rootView: ContentView(onClose: closePanel))
-        measureView.frame.size = CGSize(width: 9999, height: 9999)
-        measureView.layout()
-        let contentSize = measureView.fittingSize
-        
-        // Create the actual content view with the correct size
-        let contentView = NSHostingView(rootView: ContentView(onClose: closePanel))
-        contentView.frame.size = contentSize
+        let contentView = NSHostingView(rootView: ContentView(message: message, icon: icon, onClose: closePanel))
+        contentView.frame.size = CGSize(width: 350, height: 0)
         
         let panel = CustomPanel(
-            contentRect: NSRect(origin: .zero, size: contentSize),
+            contentRect: NSRect(origin: .zero, size: contentView.frame.size),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -72,18 +79,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let screen = NSScreen.main {
             let screenFrame = screen.visibleFrame
             let finalOrigin = NSPoint(
-                x: screenFrame.maxX - contentSize.width - xOffset,
-                y: screenFrame.maxY - contentSize.height - yOffset
+                x: screenFrame.maxX - contentView.frame.width - xOffset,
+                y: screenFrame.maxY - contentView.frame.height - yOffset
             )
             panel.setFrameOrigin(finalOrigin)
         }
         
         panel.orderFrontRegardless()
         self.panel = panel
+        
+        // Set up a timer to close the panel after 2 seconds
+        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { [weak self] _ in
+            self?.closePanel()
+        }
     }
     
     func closePanel() {
         self.panel?.close()
         self.panel = nil
+        self.timer?.invalidate()
+        self.timer = nil
+        NSApp.terminate(nil)
     }
 }
