@@ -8,10 +8,12 @@ Drawer is a lightweight, customizable notification system for macOS. It displays
 - Customizable message, icon(SF Icon), and duration
 - Configurable colors for icon, text, and background
 - Automatically disappears after a customizable duration
-- Supports command-line arguments for easy integration with scripts
+- Based on command-line arguments for easy integration with scripts
 
 ## Screenshots
 
+<img width="400" alt="Screenshot 2024-09-04 at 22 04 44" src="https://github.com/user-attachments/assets/4ff3feaf-7f8e-458f-b300-8e313b2e2d80">
+<img width="400" alt="Screenshot 2024-09-04 at 22 05 29" src="https://github.com/user-attachments/assets/876eaaf4-8334-4df6-a956-2bf659b42f6f">
 
 ## Usage
 
@@ -35,5 +37,6 @@ drawer --message "Your message here" [options]
 ```
 drawer --message "Hello, World\!" --icon "snowflake" --duration 3 --icon-color "#6188AC" --fg-color "#FFFFFF" --bg-color "#000000"`
 ```
+<img width="426" alt="image" src="https://github.com/user-attachments/assets/0b1fb9bb-0c33-4baf-8687-bb4eef777499">
 
 This will display a notification with the message "Hello, World!", a cyan snowflake icon, that lasts for 3 seconds, with a gold icon, white text, and a black background.
