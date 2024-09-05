@@ -3,26 +3,31 @@ import SwiftUI
 struct ContentView: View {
     let message: String
     let icon: String
+    let iconColor: Color
+    let fgColor: Color
+    let bgColor: Color
     var onClose: () -> Void
     
     var body: some View {
         ZStack {
-            Color(hex: "#24273C")
+            bgColor
                 .ignoresSafeArea()
                 HStack(alignment: .center, spacing: 12) {
                     Image(systemName: icon)
                         .font(.system(size: 24))
-                        .foregroundColor(Color(hex: "#5DA5FF"))
+                        .foregroundColor(iconColor)
                     
                     Text(message)
-                        .foregroundColor(Color(hex: "#BCCAFD"))
+                        .foregroundColor(fgColor)
+                        .lineSpacing(2)
                         .lineLimit(nil)
+                        .monospaced()
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
             }
-        .frame(width: 350) // Fixed height for consistency
+        .frame(width: 350)  
     }
 }
 struct VisualEffectView: NSViewRepresentable {

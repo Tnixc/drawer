@@ -41,6 +41,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let arguments = CommandLine.arguments
         var message = "No message provided"
         var icon = "slash.circle.fill" // Default icon
+        var duration = 2.0 // Default duration
+        var iconColor = Color(hex: "#5DA5FF") // Default icon color
+        var fgColor = Color(hex: "#BCCAFD") // Default foreground color
+        var bgColor = Color(hex: "#24273C") // Default background color
 
         // Parse arguments
         for i in 1..<arguments.count {
@@ -48,18 +52,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 message = arguments[i + 1]
             } else if arguments[i] == "--icon" && i + 1 < arguments.count {
                 icon = arguments[i + 1]
+            } else if arguments[i] == "--duration" && i + 1 < arguments.count {
+                duration = Double(arguments[i + 1]) ?? 2.0
+            } else if arguments[i] == "--icon-color" && i + 1 < arguments.count {
+                iconColor = Color(hex: arguments[i + 1])
+            } else if arguments[i] == "--fg-color" && i + 1 < arguments.count {
+                fgColor = Color(hex: arguments[i + 1])
+            } else if arguments[i] == "--bg-color" && i + 1 < arguments.count {
+                bgColor = Color(hex: arguments[i + 1])
             }
         }
 
-        setupPanel(with: message, icon: icon)
+        setupPanel(message: message, icon: icon, duration: duration, iconColor: iconColor, fgColor: fgColor, bgColor: bgColor)
     }
     
-    func setupPanel(with message: String, icon: String) {
+    func setupPanel(message: String, icon: String, duration: Double = 2.0, iconColor: Color = Color(hex: "#5DA5FF"), fgColor: Color = Color(hex: "#BCCAFD"), bgColor: Color = Color(hex: "#24273C")) {
         let cornerRadius: CGFloat = 16
         let xOffset: CGFloat = 15
         let yOffset: CGFloat = 15
         
-        let contentView = NSHostingView(rootView: ContentView(message: message, icon: icon, onClose: closePanel))
+        let contentView = NSHostingView(rootView: ContentView(message: message, icon: icon, iconColor: iconColor, fgColor: fgColor, bgColor: bgColor, onClose: closePanel ))
         contentView.frame.size = CGSize(width: 350, height: 0)
         
         let panel = CustomPanel(
@@ -89,7 +101,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.panel = panel
         
         // Set up a timer to close the panel after 2 seconds
-        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { [weak self] _ in
             self?.closePanel()
         }
     }
