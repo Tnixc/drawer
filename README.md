@@ -41,3 +41,7 @@ drawer --message "Hello, World\!" --icon "snowflake" --duration 3 --icon-color "
 <img width="426" alt="image" src="https://github.com/user-attachments/assets/0b1fb9bb-0c33-4baf-8687-bb4eef777499">
 
 This will display a notification with the message "Hello, World!", a cyan snowflake icon, that lasts for 3 seconds, white text, and a black background.
+
+# Todo
+- [ ] stop on hover
+- [ ] slide in/out animation
