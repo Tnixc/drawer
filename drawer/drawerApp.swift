@@ -25,11 +25,12 @@ class CustomPanel: NSPanel {
 }
 
 @main
-struct drawerApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
-    var body: some Scene {
-        Settings { }
+struct DrawerApp {
+    static func main() {
+        let app = NSApplication.shared
+        let delegate = AppDelegate()
+        app.delegate = delegate
+        app.run()
     }
 }
 
@@ -103,6 +104,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Set up a timer to close the panel after 2 seconds
         timer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { [weak self] _ in
             self?.closePanel()
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            self.closePanel()
         }
     }
     
