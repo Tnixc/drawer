@@ -1,52 +1,63 @@
-import SwiftUI
 import AppKit
+import SwiftUI
 
 @main
 struct DrawerApp {
-    static func main() {
-        let app = NSApplication.shared
-        let delegate = AppDelegate()
-        app.delegate = delegate
-        app.run()
-    }
+  static func main() {
+    let app = NSApplication.shared
+    let delegate = AppDelegate()
+    app.delegate = delegate
+    app.run()
+  }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var window: NSWindow?
-    var dismissTimer: Timer?
+  var windows: [NSWindow] = []
+  var dismissTimer: Timer?
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        setupWindow(message: "Time to clock out")
-        
-        dismissTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { [weak self] _ in
-            self?.dismissWindow()
-        }
+  func applicationDidFinishLaunching(_ notification: Notification) {
+    setupWindows(message: "Time to clock out")
+
+    dismissTimer = Timer.scheduledTimer(
+      withTimeInterval: 5.0, repeats: false
+    ) { [weak self] _ in
+      self?.dismissWindows()
     }
+  }
 
-    func setupWindow(message: String) {
-        let contentView = NSHostingView(rootView: ContentView(message: message))
+  func setupWindows(message: String) {
+    for screen in NSScreen.screens {
+      let contentView = NSHostingView(
+        rootView: ContentView(message: message))
 
-        let window = NSWindow(
-            contentRect: NSScreen.main!.frame,
-            styleMask: [.borderless, .fullSizeContentView],
-            backing: .buffered,
-            defer: false
-        )
+      let window = NSWindow(
+        contentRect: screen.frame,
+        styleMask: [.borderless, .fullSizeContentView],
+        backing: .buffered,
+        defer: false
+      )
 
-        window.contentView = contentView
-        window.backgroundColor = .clear
-        window.isOpaque = false
-        window.hasShadow = false
-        window.level = .statusBar
-        window.ignoresMouseEvents = false
-        window.collectionBehavior = [.canJoinAllSpaces, .stationary]
+      window.contentView = contentView
+      window.backgroundColor = .clear
+      window.isOpaque = false
+      window.hasShadow = false
+      window.level = .statusBar
+      window.ignoresMouseEvents = false
+      window.collectionBehavior = [.canJoinAllSpaces, .stationary]
 
-        window.makeKeyAndOrderFront(nil)
-        self.window = window
+      // Set the window's frame to match the screen's frame
+      window.setFrame(screen.frame, display: true)
+
+      window.makeKeyAndOrderFront(nil)
+      self.windows.append(window)
     }
-    
-    func dismissWindow() {
-        window?.close()
-        NSApp.terminate(nil)
+  }
+
+  func dismissWindows() {
+    for window in windows {
+      window.close()
     }
+    windows.removeAll()
+    NSApp.terminate(nil)
+  }
 }
